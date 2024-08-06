@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peer-Mentor Review Survey</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Include the latest EmailJS SDK -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function(){
+      emailjs.init("wDUyET1h2m-snywqa"); // Replace with your EmailJS user ID
+    })();
+  </script>
+  <style>
+    /* Custom Alert Box CSS */
+    .custom-alert {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    .custom-alert p {
+      margin: 0 0 20px;
+    }
+
+    .custom-alert button {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    .custom-alert button:hover {
+      background-color: darkred;
+    }
+
+    .alert-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <section class="container">
+    <header>Peer-Mentor Review Survey</header>
+    <form id="contact-form" class="form" onsubmit="sendMail(event)">
+      <div class="input-box">
+        <label>Full Name</label>
+        <input type="text" id="full_name" name="full_name" placeholder="Enter full name" required />
+      </div>
+      <div class="input-box">
+        <label>Email Address</label>
+        <input type="email" id="email" name="email" placeholder="Enter email address" required />
+      </div>
+      <div class="input-box">
+        <label>Journal Title Reviewed:</label>
+        <input type="text" id="journal" name="journal" placeholder="Enter journal title" required />
+      </div>
+      <div class="input-box address">
+        <label>Article Title (Peer Reviewed)</label>
+        <input type="text" id="article" name="article" placeholder="Enter article title" required />
+      </div>
+      <div class="input-box address">
+        <label>Mentor's Full Name</label>
+        <input type="text" id="mentor" name="mentor" placeholder="Enter mentor's full name" required />
+      </div>
+      <div class="input-box">
+        <label>Mentor's Email Address</label>
+        <input type="email" id="mentor_email" name="mentor_email" placeholder="Enter mentor's email address" required />
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  </section>
+
+  <div class="alert-overlay"></div>
+  <div class="custom-alert">
+    <p>Your survey was submitted successfully!</p>
+    <button onclick="closeAlert()">OK</button>
+  </div>
+
+  <script type="text/javascript">
+    function sendMail(event) {
+      event.preventDefault();
+      var params = {
+        full_name: document.getElementById("full_name").value,
+        email: document.getElementById("email").value,
+        journal: document.getElementById("journal").value,
+        article: document.getElementById("article").value,
+        mentor: document.getElementById("mentor").value,
+        mentor_email: document.getElementById("mentor_email").value,
+        link: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_7W0ovVvDMgSttVI" // Replace with the actual link you want to include
+      };
+
+      const mentorServiceID = "service_xwak3ll"; // Replace with your actual service ID for the mentor email
+      const mentorTemplateID = "template_mdw74zh"; // Replace with your actual template ID for the mentor email
+      const myServiceID = "service_xwak3ll"; // Replace with your actual service ID for your email
+      const myTemplateID = "template_2tsgirh"; // Replace with your actual template ID for your email
+
+      // Send email to mentor
+      emailjs.send(mentorServiceID, mentorTemplateID, {
+        mentor_email: params.mentor_email, // dynamic recipient
+        full_name: params.full_name,
+        email: params.email,
+        journal: params.journal,
+        article: params.article,
+        mentor: params.mentor,
+        link: params.link
+      })
+      .then(res => {
+        console.log('Mentor email sent', res);
+
+        // Send email to yourself
+        return emailjs.send(myServiceID, myTemplateID, params);
+      })
+      .then(res => {
+        document.getElementById("contact-form").reset();
+        console.log('Your email sent', res);
+        showAlert();
+      })
+      .catch(err => console.log('Failed to send email', err));
+    }
+
+    function showAlert() {
+      document.querySelector('.alert-overlay').style.display = 'block';
+      document.querySelector('.custom-alert').style.display = 'block';
+    }
+
+    function closeAlert() {
+      document.querySelector('.alert-overlay').style.display = 'none';
+      document.querySelector('.custom-alert').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
