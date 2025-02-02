@@ -112,7 +112,7 @@ body {
 .form button:hover {
   background:#f15b6c;
 }
-/*Responsive*/
+
 @media screen and (max-width: 500px) {
   .form .column {
     flex-wrap: wrap;
@@ -125,4 +125,28 @@ body {
 .logo {
   margin-right:450px; /* Move image 50px to the right */
   margin-bottom: 800px;  /* Move image 20px down */
+}
+.input-box input[type="file"] {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #707070;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.input-box input[type="file"]::-webkit-file-upload-button {
+  background: #E4002B;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.input-box input[type="file"]::-webkit-file-upload-button:hover {
+  background: #f15b6c;
 }
