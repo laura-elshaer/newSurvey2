@@ -83,11 +83,6 @@
         <input type="email" id="mentor_email" name="mentor_email" placeholder="Enter mentor's email address" required />
       </div>
       
-      <div class="input-box">
-        <label>Upload Certificate</label>
-        <input type="file" id="certificate" name="certificate" accept=".jpg, .jpeg, .png, .pdf" required />
-      </div>
-      
       <button type="submit">Submit</button>
     </form>
   </section>
@@ -101,58 +96,24 @@
   <script type="text/javascript">
     function sendMail(event) {
       event.preventDefault();
-      const fileInput = document.getElementById('certificate');
-      const file = fileInput.files[0];
-      const reader = new FileReader();
-
-      reader.onload = async function () {
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('certificate_data', reader.result);
-        formData.append('fileName', file.name);
-        formData.append('mimeType', file.type);
-    
-        try {
-          // Send the data to Google Apps Script
-          const response = await fetch('https://script.google.com/macros/s/AKfycbxd-vL3F_rIqnIFv4QlSAzG5rhN_7DHl1QGvETfZ9cKclHoOuA28-zdy6WaRQhDSEsejQ/exec', {
-            method: 'POST',
-            body: formData,
-          
-           
-
-          });
-    
-          const result = await response.json();
-         alert('File uploaded successfully: ' + result.status);
-        } catch (error) {
-          console.error('Upload failed:', error);
-          alert('File upload failed.');
-        }
-      };
-    
-      // Read the file as base64
-      reader.readAsDataURL(file);
-   
-    
-      const params = {
+      var params = {
         full_name: document.getElementById("full_name").value,
         email: document.getElementById("email").value,
         journal: document.getElementById("journal").value,
         article: document.getElementById("article").value,
         mentor: document.getElementById("mentor").value,
         mentor_email: document.getElementById("mentor_email").value,
-        link: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_7W0ovVvDMgSttVI" // Replace with the actual link
+        link: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_7W0ovVvDMgSttVI" // Replace with the actual link you want to include
       };
-    
-      // EmailJS - First send the email
-      const mentorServiceID = "service_xwak3ll";
-      const mentorTemplateID = "template_mdw74zh";
-      const myServiceID = "service_xwak3ll";
-      const myTemplateID = "template_2tsgirh";
-    
+
+      const mentorServiceID = "service_xwak3ll"; // Replace with your actual service ID for the mentor email
+      const mentorTemplateID = "template_mdw74zh"; // Replace with your actual template ID for the mentor email
+      const myServiceID = "service_xwak3ll"; // Replace with your actual service ID for your email
+      const myTemplateID = "template_2tsgirh"; // Replace with your actual template ID for your email
+
       // Send email to mentor
       emailjs.send(mentorServiceID, mentorTemplateID, {
-        mentor_email: params.mentor_email,
+        mentor_email: params.mentor_email, // dynamic recipient
         full_name: params.full_name,
         email: params.email,
         journal: params.journal,
@@ -162,35 +123,17 @@
       })
       .then(res => {
         console.log('Mentor email sent', res);
-    
+
         // Send email to yourself
         return emailjs.send(myServiceID, myTemplateID, params);
       })
       .then(res => {
+        document.getElementById("contact-form").reset();
         console.log('Your email sent', res);
-    
-          // Now send data to Google Sheets using GET
-    const url = "https://script.google.com/macros/s/AKfycbxd-vL3F_rIqnIFv4QlSAzG5rhN_7DHl1QGvETfZ9cKclHoOuA28-zdy6WaRQhDSEsejQ/exec"
-
-    return fetch(`${url}?${params}`, {
-      method: "GET",
-  
-
-    });
-  })
-  //.then(response => response.json())
-  .then(data => {
-    if (data.status === 'success') {
-      console.log('Data successfully sent to Google Sheets');
-      document.getElementById("contact-form").reset();
-      showAlert();
+        showAlert();
+      })
+      .catch(err => console.log('Failed to send email', err));
     }
-  })
-  .catch(err => {
-    console.error('Error:', err);
-  });
-    }
-    
 
     function showAlert() {
       document.querySelector('.alert-overlay').style.display = 'block';
