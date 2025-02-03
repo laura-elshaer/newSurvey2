@@ -19,7 +19,7 @@ bucket_name = 'peermentorreview'
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
-app = Flask(__name__)
+
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
