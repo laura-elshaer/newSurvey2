@@ -5,13 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Peer-Mentor Review Survey</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Include the latest EmailJS SDK -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script type="text/javascript">
-    (function(){
-      emailjs.init("wDUyET1h2m-snywqa"); // Replace with your EmailJS user ID
-    })();
-  </script>
   <style>
     /* Custom Alert Box CSS */
     .custom-alert {
@@ -57,7 +50,7 @@
 <body>
   <section class="container">
     <header>Peer-Mentor Review Survey</header>
-    <form id="contact-form" class="form" onsubmit="sendMail(event)">
+    <form id="contact-form" action="https://newsurvey2.onrender.com/submit-form" method="POST" class="form" onsubmit="submitForm(event)" enctype="multipart/form-data">
       <div class="input-box">
         <label>Full Name</label>
         <input type="text" id="full_name" name="full_name" placeholder="Enter full name" required />
@@ -70,17 +63,21 @@
         <label>Journal Title Reviewed:</label>
         <input type="text" id="journal" name="journal" placeholder="Enter journal title" required />
       </div>
-      <div class="input-box address">
+      <div class="input-box">
         <label>Article Title (Peer Reviewed)</label>
         <input type="text" id="article" name="article" placeholder="Enter article title" required />
       </div>
-      <div class="input-box address">
+      <div class="input-box">
         <label>Mentor's Full Name</label>
         <input type="text" id="mentor" name="mentor" placeholder="Enter mentor's full name" required />
       </div>
       <div class="input-box">
         <label>Mentor's Email Address</label>
         <input type="email" id="mentor_email" name="mentor_email" placeholder="Enter mentor's email address" required />
+      </div>
+      <div class="input-box">
+        <label>Upload Certificate</label>
+        <input type="file" id="certificate" name="certificate" accept=".pdf,.doc,.docx"  />
       </div>
       
       <button type="submit">Submit</button>
@@ -93,53 +90,43 @@
     <button onclick="closeAlert()">OK</button>
   </div>
 
-  <script type="text/javascript">
-    function sendMail(event) {
+  <script>
+    // Function to submit the form and send data to the backend
+    function submitForm(event) {
       event.preventDefault();
-      var params = {
-        full_name: document.getElementById("full_name").value,
-        email: document.getElementById("email").value,
-        journal: document.getElementById("journal").value,
-        article: document.getElementById("article").value,
-        mentor: document.getElementById("mentor").value,
-        mentor_email: document.getElementById("mentor_email").value,
-        link: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_7W0ovVvDMgSttVI" // Replace with the actual link you want to include
-      };
 
-      const mentorServiceID = "service_xwak3ll"; // Replace with your actual service ID for the mentor email
-      const mentorTemplateID = "template_mdw74zh"; // Replace with your actual template ID for the mentor email
-      const myServiceID = "service_xwak3ll"; // Replace with your actual service ID for your email
-      const myTemplateID = "template_2tsgirh"; // Replace with your actual template ID for your email
+      // Create FormData object to include text inputs and file
+      var formData = new FormData(document.getElementById("contact-form"));
 
-      // Send email to mentor
-      emailjs.send(mentorServiceID, mentorTemplateID, {
-        mentor_email: params.mentor_email, // dynamic recipient
-        full_name: params.full_name,
-        email: params.email,
-        journal: params.journal,
-        article: params.article,
-        mentor: params.mentor,
-        link: params.link
+      // Send the form data to the backend API
+      fetch('https://newsurvey2.onrender.com/submit-form', {
+        method: 'POST',
+        body: formData
       })
-      .then(res => {
-        console.log('Mentor email sent', res);
-
-        // Send email to yourself
-        return emailjs.send(myServiceID, myTemplateID, params);
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Form submission failed.');
+        }
+        return response.json();
       })
-      .then(res => {
+      .then(data => {
+        console.log('Form submission successful', data);
         document.getElementById("contact-form").reset();
-        console.log('Your email sent', res);
         showAlert();
       })
-      .catch(err => console.log('Failed to send email', err));
+      .catch(error => {
+        console.error('Error submitting form:', error);
+        alert('An error occurred while submitting the form. Please try again.');
+      });
     }
 
+    // Show success alert
     function showAlert() {
       document.querySelector('.alert-overlay').style.display = 'block';
       document.querySelector('.custom-alert').style.display = 'block';
     }
 
+    // Close success alert
     function closeAlert() {
       document.querySelector('.alert-overlay').style.display = 'none';
       document.querySelector('.custom-alert').style.display = 'none';
