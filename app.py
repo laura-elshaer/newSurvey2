@@ -9,7 +9,7 @@ import requests
 # Initialize Flask
 app = Flask(__name__)
 CORS(app)
-storage_client = storage.Client.from_service_account_json('graceful-byway-449804-e2-02e24efd1eae.json')
+storage_client = storage.Client.from_service_account_json('/etc/secrets/graceful-byway-449804-e2-02e24efd1eae.json')
 bucket_name = 'peermentorreview'
 
 # Flask route to serve static index page
