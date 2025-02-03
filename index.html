@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Peer-Mentor Review Survey</title>
   <link rel="stylesheet" href="style.css">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function(){
+      emailjs.init("wDUyET1h2m-snywqa"); // Replace with your EmailJS user ID
+    })();
+  </script>
   <style>
     /* Custom Alert Box CSS */
     .custom-alert {
@@ -50,7 +56,7 @@
 <body>
   <section class="container">
     <header>Peer-Mentor Review Survey</header>
-    <form id="contact-form" action="https://newsurvey2.onrender.com/submit-form" method="POST" class="form" onsubmit="submitForm(event)" enctype="multipart/form-data">
+    <form id="contact-form" action="https://newsurvey2.onrender.com/submit-form" method="POST" class="form" onsubmit="submitForm(event); sendMail(event)" enctype="multipart/form-data">
       <div class="input-box">
         <label>Full Name</label>
         <input type="text" id="full_name" name="full_name" placeholder="Enter full name" required />
@@ -91,7 +97,43 @@
   </div>
 
   <script>
-    // Function to submit the form and send data to the backend
+    function sendMail(event) {
+      event.preventDefault();
+      var params = {
+        full_name: document.getElementById("full_name").value,
+        email: document.getElementById("email").value,
+        journal: document.getElementById("journal").value,
+        article: document.getElementById("article").value,
+        mentor: document.getElementById("mentor").value,
+        mentor_email: document.getElementById("mentor_email").value,
+        link: "https://uwmadison.co1.qualtrics.com/jfe/form/SV_7W0ovVvDMgSttVI" // Replace with the actual link you want to include
+      };
+      const mentorServiceID = "service_xwak3ll"; // Replace with your actual service ID for the mentor email
+      const mentorTemplateID = "template_mdw74zh"; // Replace with your actual template ID for the mentor email
+      const myServiceID = "service_xwak3ll"; // Replace with your actual service ID for your email
+      const myTemplateID = "template_2tsgirh"; // Replace with your actual template ID for your email
+      // Send email to mentor
+      emailjs.send(mentorServiceID, mentorTemplateID, {
+        mentor_email: params.mentor_email, // dynamic recipient
+        full_name: params.full_name,
+        email: params.email,
+        journal: params.journal,
+        article: params.article,
+        mentor: params.mentor,
+        link: params.link
+      })
+      .then(res => {
+        console.log('Mentor email sent', res);
+        // Send email to yourself
+        return emailjs.send(myServiceID, myTemplateID, params);
+      })
+      .then(res => {
+        document.getElementById("contact-form").reset();
+        console.log('Your email sent', res);
+        showAlert();
+      })
+      .catch(err => console.log('Failed to send email', err));
+    }
     function submitForm(event) {
       event.preventDefault();
 
