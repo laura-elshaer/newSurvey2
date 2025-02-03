@@ -50,7 +50,7 @@
 <body>
   <section class="container">
     <header>Peer-Mentor Review Survey</header>
-    <form id="contact-form" action="http://127.0.0.1:5001/submit-form" method="POST" class="form" onsubmit="submitForm(event)" enctype="multipart/form-data">
+    <form id="contact-form" action="https://newsurvey2.onrender.com/submit-form" method="POST" class="form" onsubmit="submitForm(event)" enctype="multipart/form-data">
       <div class="input-box">
         <label>Full Name</label>
         <input type="text" id="full_name" name="full_name" placeholder="Enter full name" required />
@@ -99,7 +99,7 @@
       var formData = new FormData(document.getElementById("contact-form"));
 
       // Send the form data to the backend API
-      fetch('http://127.0.0.1:5001/submit-form', {
+      fetch('https://newsurvey2.onrender.com/submit-form', {
         method: 'POST',
         body: formData
       })

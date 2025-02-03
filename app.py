@@ -4,9 +4,11 @@ from flask_cors import CORS
 import base64
 from google.cloud import storage
 import requests
+from flask import Flask, request, jsonify
 
 
-# Initialize Flask
+
+
 app = Flask(__name__)
 CORS(app)
 storage_client = storage.Client.from_service_account_json('/etc/secrets/graceful-byway-449804-e2-02e24efd1eae.json')
@@ -16,10 +18,6 @@ bucket_name = 'peermentorreview'
 @app.route('/')
 def index():
     return send_from_directory(app.static_folder, 'index.html')
-from flask import Flask, request, jsonify
-import os
-from datetime import datetime
-import sqlite3
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -60,7 +58,7 @@ def submit_form():
         return jsonify({"error": "Submission failed"}), 500
     
 
-# Run Flask server
+
 
 if __name__ == '__main__':
     print("Starting Flask app...")
