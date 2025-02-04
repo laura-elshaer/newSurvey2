@@ -11,13 +11,15 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 CORS(app)
-storage_client = storage.Client.from_service_account_json('/etc/secrets/graceful-byway-449804-e2-02e24efd1eae.json')
+#/etc/secrets/graceful-byway-449804-e2-02e24efd1eae.json
+storage_client = storage.Client.from_service_account_json('graceful-byway-449804-e2-02e24efd1eae.json')
 bucket_name = 'peermentorreview'
 
-# Flask route to serve static index page
+
 @app.route('/')
 def index():
-    return send_from_directory(app.static_folder, 'index.html')
+   # return send_from_directory(app.static_folder, 'index.html')
+   return send_from_directory('.', 'index.html')
 
 
 UPLOAD_FOLDER = 'uploads'
@@ -27,17 +29,22 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def submit_form():
     try:
         
-       
+        print("hi")
         data = request.form
         file = request.files['certificate']
         file = request.files.get('certificate')
-        file_path = os.path.join('uploads', file.filename)
-        file.save(file_path)
-        bucket = storage_client.get_bucket(bucket_name)
-        blob = bucket.blob(file.filename)
-        blob.upload_from_filename(file_path)
-        print("File uploaded successfully.")
-        apps_script_url = 'https://script.google.com/macros/s/AKfycbz2G7xLJtcG647oYUyPtIEOwA6U4bv5CwFKU7Tm2E2exsvDD0Yd_eBWvPDRS3YWELJ0Ug/exec'
+        if file and file.filename:
+         file_path = os.path.join('uploads', file.filename)
+         file.save(file_path)
+         bucket = storage_client.get_bucket(bucket_name)
+         blob = bucket.blob(file.filename)
+         blob.upload_from_filename(file_path)
+         print("File uploaded successfully.")
+         certificate_uploaded = 'Yes'
+        else:
+            print("No file uploaded.")
+            certificate_uploaded = 'No'
+        apps_script_url = 'https://script.google.com/macros/s/AKfycbyqvb3rYWm-crYZaOyk6B6Z2e62kN25XXC9ZlDzzHtAJNtNbJiRIGdxLPNwNJAgQ5majA/exec'
         response = requests.post(apps_script_url, json={
             'full_name': data['full_name'],
             'email': data['email'],
@@ -45,7 +52,7 @@ def submit_form():
             'article': data['article'],
             'mentor': data['mentor'],
             'mentor_email': data['mentor_email'],
-            'certificate_uploaded': 'Yes' if file else 'No',
+            'certificate_uploaded':certificate_uploaded ,
             
         },headers={'Content-Type': 'application/json'})
         print("Apps Script Response:", response.text)
